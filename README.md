@@ -1,6 +1,8 @@
 # MPPITutorial
 
-A codebase for running the MPPI algorithm on OpenAI gym style environments
+A codebase for running the MPPI algorithm on CarRacing and OpenAI gym style environments
+
+![](docs/CarRacing-curve-v1.gif)
 
 ## Dependencies
 
