@@ -105,9 +105,9 @@ env_agent_configs = {
 	},
 	env_grps["car"]: {
 		"mppi": Config(
+			# DYN_ENV_NAME = "CarRacing-sebring-v1",
 			REWARD_MODEL = f"{inspect.getmodule(CostModel).__name__}:{CostModel.__name__}",
 			DYNAMICS_SPEC = f"{inspect.getmodule(CarRacingV1).__name__}:{CarRacingV1.__name__}",
-			# DYN_ENV_NAME = "CarRacing-sebring-v1",
 			MAX_BUFFER_SIZE = 100000,    	# Sets the maximum length of the replay buffer
 			REPLAY_BATCH_SIZE = 32,  		# How many experience tuples to sample from the buffer for each train step
 			TRAIN_EVERY = 1,    			# Number of iterations to sample batches for training
@@ -115,7 +115,7 @@ env_agent_configs = {
 			ENV_MODEL = "batchreal",
 			MPC = Config(
 				NSAMPLES = 100, 			# The number of sample trajectories to rollout when calculating the control update
-				HORIZON = 20,  			# How many time steps into the future to rollout each trajectory sample
+				HORIZON = 20,  				# How many time steps into the future to rollout each trajectory sample
 				LAMBDA = 0.1, 				# The degree of spread over the samples when combining weights. Lower means high weights dominate low weights more
 				COV = 10,					# The value for the diagonal of the cov matrix for degree of randomness in the noise samples
 			)

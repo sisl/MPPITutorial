@@ -15,7 +15,7 @@ from src.utils.misc import seed_all
 from src.agents import all_models, get_config
 from src.envs import all_envs
 
-ROOT = os.path.abspath(f"{os.path.dirname(__file__)}/../../../data")
+ROOT = os.path.abspath(f"{os.path.dirname(__file__)}/../../data")
 
 class RolloutCollector():
 	def __init__(self, save_path):
@@ -48,10 +48,11 @@ class RolloutCollector():
 		print(f"Saving {path}, Reward: {np.sum(r):8.2f}, Len: {len(r):5d}")
 		self.reset_rollout()
 
-class RolloutDataset(torch.utils.data.Dataset): 
+class RolloutSequenceDataset(torch.utils.data.Dataset): 
 	def __init__(self, config, data_dir, buffer_size=1000000, train=True): 
 		self._files = sorted([os.path.join(data_dir, f) for f in glob.glob(f"{data_dir}/**/*.npz", recursive=True)])
 		self._files = train_test_split(self._files, train_size=config.train_prop, shuffle=True, random_state=config.SEED)[1-int(train)]
+		self._seq_len = config.seq_len if config.get("seq_len") is not None else self._min_seq_len(self._files)
 		self._cum_size = None
 		self._buffer = None
 		self._buffer_fnames = None
@@ -79,16 +80,15 @@ class RolloutDataset(torch.utils.data.Dataset):
 		data = self._buffer[file_index]
 		return self._get_data(data, seq_index)
 
-	def _get_data(self, data, seq_index):
-		pass
-
-	def _data_per_sequence(self, data_length):
-		pass
-
-class RolloutSequenceDataset(RolloutDataset): 
-	def __init__(self, config, data_dir, buffer_size=1000000, train=True): 
-		self._seq_len = config.seq_len
-		super().__init__(config, data_dir, buffer_size, train)
+	def _min_seq_len(self, files):
+		seq_lens = []
+		state_norms = []
+		for f in files:
+			with np.load(f) as data:
+				seq_lens.append(data['rewards'].shape[0])
+				state_norms.append(np.mean(data["states"],0))
+		norms = np.mean(state_norms, 0)
+		return np.min(seq_lens)
 
 	def _get_data(self, data, seq_index):
 		states_data = data['states'][seq_index:seq_index + self._seq_len + 1].astype(np.float32)

@@ -113,7 +113,7 @@ class X1Dynamics():
 		pedal_rate = action[...,1]
 		dt = dt/integration_steps
 		state = self.state
-		turn_limit = self.turn_limit*np.minimum(50/state.Vx,2)**2
+		turn_limit = self.turn_limit*np.minimum(50/np.abs(state.Vx),2)**2
 		Fy_scale = np.minimum(np.abs(state.Vx), 1)
 		
 		for i in range(integration_steps):

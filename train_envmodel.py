@@ -66,7 +66,7 @@ def parse_args(envs, agents, envmodels, frameworks):
 	parser.add_argument("--model", type=str, default=None, choices=agents, help="Which RL algorithm to use as the agent. Allowed values are:\n"+', '.join(agents), metavar="model")
 	parser.add_argument("--nworkers", type=int, default=0, help="Number of workers to use to load dataloader")
 	parser.add_argument("--epochs", type=int, default=250, help="Number of epochs to train the envmodel")
-	parser.add_argument("--seq_len", type=int, default=150, help="Length of sequence to train RNN")
+	parser.add_argument("--seq_len", type=int, default=None, help="Length of sequence to train RNN")
 	parser.add_argument("--batch_size", type=int, default=256, help="Size of batch to train RNN")
 	parser.add_argument("--train_prop", type=float, default=0.8, help="Proportion of trajectories to use for training")
 	return parser.parse_args()
