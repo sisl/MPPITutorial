@@ -10,9 +10,7 @@ get_track_file = lambda track_name: os.path.join(root, "spec", "tracks", f"{trac
 get_map_file = lambda track_name: os.path.join(root, "spec", "point_maps", f"{track_name}.npz")
 loaded_tracks = {}
 loaded_point_maps = {}
-track_name = "sebring"
-# track_name = "circuit2D"
-# track_name = "curve"
+track_name = "curve"
 
 class Track():
 	def __init__(self, track_name=track_name, stride=1):

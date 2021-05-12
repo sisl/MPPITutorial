@@ -8,7 +8,7 @@ try:
 	from .ddpg import rDDPGAgent
 	from .ddqn import rDDQNAgent
 except ImportError as e:
-	print(e)
+	print(f"{str(e)}: Install ray if using rllib agents")
 	rPPOAgent = None
 	rSACAgent = None
 	rDDPGAgent = None

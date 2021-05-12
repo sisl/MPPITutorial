@@ -1,11 +1,17 @@
 import pickle
 import numpy as np
 import socket as Socket
-from mpi4py import MPI
 
-MPI_COMM = MPI.COMM_WORLD
-MPI_SIZE = MPI_COMM.Get_size()
-MPI_RANK = MPI_COMM.Get_rank()
+try:
+	from mpi4py import MPI
+	MPI_COMM = MPI.COMM_WORLD
+	MPI_SIZE = MPI_COMM.Get_size()
+	MPI_RANK = MPI_COMM.Get_rank()
+except ImportError as e:
+	print(f"{str(e)}: Install mpi4py if using socket parallel envs")
+	MPI_COMM = None
+	MPI_SIZE = 0
+	MPI_RANK = 0
 TCP_PORTS = None
 TCP_SIZE = 0
 TCP_RANK = 0
