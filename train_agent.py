@@ -22,8 +22,7 @@ class GymTrainer():
 		
 	def start(self):
 		if self.config.trial: self.trial(agent=self.agent.load_model(self.checkpoint))
-		elif self.config.rank==self.config.split: self.evaluate()
-		elif self.config.rank==0: self.train()
+		else: self.train()
 	
 	def trial(self, agent, step=0, eps=0, stats={}, time_sleep=0.0):
 		rollouts = rollout(self.envs, agent, eps=eps, render=self.config.render, time_sleep=time_sleep, print_action=False)
@@ -72,7 +71,7 @@ def parse_args(envs, agents, frameworks):
 	parser.add_argument("agent_name", type=str, choices=agents, help="Which RL algorithm to use as the agent. Allowed values are:\n"+', '.join(agents), metavar="agent_name")
 	parser.add_argument("--framework", type=str, default=frameworks[0], choices=frameworks, help="Which framework to use for training. Allowed values are:\n"+', '.join(frameworks), metavar="framework")
 	parser.add_argument("--num_envs", type=int, default=1, help="How many parallel envs to train the agent in")
-	parser.add_argument("--nsteps", type=int, default=100000, help="Number of steps to train the agent")
+	parser.add_argument("--nsteps", type=int, default=10000, help="Number of steps to train the agent")
 	parser.add_argument("--ref", type=str, default=None, choices=all_refs, help="Which reference processing network to use")
 	parser.add_argument("--render", action="store_true", help="Whether to render an environment rollout")
 	parser.add_argument("--trial", action="store_true", help="Whether to trial run from saved checkpoint")
