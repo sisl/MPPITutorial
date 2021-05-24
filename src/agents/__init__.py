@@ -157,9 +157,9 @@ envmodel_configs = {
 	)
 }
 
-def add_envmodel_config(config, make_env):
-	envmodel = config.get("ENV_MODEL", None)
-	if envmodel is None: return config
+def add_envmodel_config(config, make_env, envmodel_name=None):
+	config.ENV_MODEL = envmodel_name if envmodel_name else config.get("ENV_MODEL", None)
+	if config.ENV_MODEL is None: return config
 	env = make_env()
 	config.state_size = get_space_size(env.observation_space)
 	config.action_size = get_space_size(env.action_space)
@@ -167,7 +167,7 @@ def add_envmodel_config(config, make_env):
 	config.dynamics_norm = getattr(env, "dynamics_norm", np.ones(config.dynamics_size)).astype(np.float32)
 	config.dynamics_somask = getattr(env, "dynamics_somask", np.ones(config.dynamics_size)).astype(np.float32)
 	env.close()
-	dyn_config = envmodel_configs.get(envmodel, envmodel_config)
+	dyn_config = envmodel_configs.get(config.ENV_MODEL, envmodel_config)
 	return config.update(DYN=dyn_config)
 
 def get_envmodel_cls(config, make_env):
@@ -177,7 +177,7 @@ def get_envmodel_cls(config, make_env):
 	if config.framework == "pt": envmodel_cls = get_envmodel(config)
 	return envmodel_cls
 
-def get_config(env_name, agent_name, framework="pt", render=False):
+def get_config(env_name, agent_name, framework="pt", envmodel_name=None):
 	assert env_name in all_envs, "Env name not found"
 	env_grp = [x for x in env_grps.values() if env_name in x][0]
 	env_config = env_configs.get(env_grp, train_config)
@@ -187,5 +187,5 @@ def get_config(env_name, agent_name, framework="pt", render=False):
 	agent_config.merge(env_agent_config)
 	env_config.merge(agent_config)
 	make_env = lambda **kwargs: get_env(env_name, **kwargs)
-	config = add_envmodel_config(env_config, make_env).update(env_name=env_name)
+	config = add_envmodel_config(env_config, make_env, envmodel_name).update(env_name=env_name)
 	return make_env, agent_cls, config

@@ -3,7 +3,7 @@ import argparse
 import numpy as np
 try: import keyboard as kbd
 except: print("No module keyboard")
-from src.agents import get_config, all_refs, all_agents
+from src.agents import get_config, all_refs, all_agents, all_envmodels
 from src.agents.wrappers import ParallelAgent, RefAgent
 from src.envs import all_envs
 from src.envs.wrappers import EnsembleEnv, EnvManager, EnvWorker
@@ -38,7 +38,7 @@ class InputController(RandomAgent):
 def test_mppi(args, nsteps, log=False, save_video=False, show_trajectories=True):
 	model = "mppi"
 	env_name = "CarRacing-curve-v1"
-	make_env, agent_cls, config = get_config(env_name, model, "pt")
+	make_env, agent_cls, config = get_config(env_name, model, "pt", args.envmodel)
 	envs = EnsembleEnv(lambda: make_env(withtrack=False), 0)
 	load_env = config.get("DYN_ENV_NAME", env_name)
 	agent = ParallelAgent(envs.state_size, envs.action_size, agent_cls, config, gpu=True).load_model(load_env)
@@ -149,7 +149,7 @@ def log_track(track_name, spec=None, time=-1):
 		PathY = np.round(spec.Y, 4)
 		track.write(f"{PathX},{PathY}\n")
 
-def parse_args():
+def parse_args(envmodels):
 	parser = argparse.ArgumentParser(description="MPC Tester")
 	parser.add_argument("--nsteps", type=int, default=7000, help="Number of steps to train the agent")
 	parser.add_argument("--save_run", action="store_true", help="Whether to log each time step's state in a run txt file")
@@ -159,9 +159,10 @@ def parse_args():
 	parser.add_argument("--env_name", type=str, default="CarRacing-sebring-v1", choices=all_envs, help="Which env to use")
 	parser.add_argument("--agent_name", type=str, default=None, choices=all_agents, help="Which agent network to use")
 	parser.add_argument("--ref", type=str, default=None, choices=all_refs, help="Which reference processing network to use")
+	parser.add_argument("--envmodel", type=str, default=None, choices=envmodels, help="Which model to use as the dynamics. Allowed values are:\n"+', '.join(envmodels), metavar="envmodels")
 	return parser.parse_args()
 
 if __name__ == "__main__":
-	args = parse_args()
+	args = parse_args(list(all_envmodels.keys()))
 	function = test_input if args.input else test_rl if args.agent_name is not None else test_mppi
 	function(args, args.nsteps, args.save_run, args.save_video)
